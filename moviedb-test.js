@@ -19,11 +19,14 @@ if (argument === 'genre') {
 } else if (argument === 'discover') {
     // http://docs.themoviedb.apiary.io/#reference/discover/discovermovie
     theMovieDb.discover.getMovies({
-        'include_adult': true,
         'with_genres': '35,28|35|28' // (comedy and action) or comedy or action
     }, successCB, errorCB);
 } else if (argument === 'movie') {
-    theMovieDb.movies.getById({"id":293660 }, successCB, errorCB)
+    theMovieDb.movies.getById({"id": 293660}, successCB, errorCB);
+} else if (argument === 'credits') {
+    theMovieDb.movies.getCredits({"id": 293660}, successCB, errorCB);
+} else if (argument === 'similar') {
+    theMovieDb.movies.getSimilarMovies({"id": 293660}, successCB, errorCB);
 } else {
     console.log("invalid argument: " + argument);
 }

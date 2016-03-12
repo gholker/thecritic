@@ -1,0 +1,8 @@
+AddReleaseYearIntent movie from {RELEASEYEAR}
+AddReleaseYearIntent from {RELEASEYEAR}
+AddReleaseYearIntent released in {RELEASEYEAR}
+AddReleaseYearIntent was released in {RELEASEYEAR}
+AddReleaseYearIntent year of release {RELEASEYEAR}
+AddReleaseYearIntent {RELEASEYEAR} release
+AddReleaseYearIntent year {RELEASEYEAR}
+

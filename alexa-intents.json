@@ -1,0 +1,12 @@
+{
+  "intents": [
+    {
+      "intent": "AddReleaseYearIntent",
+      "slots": [
+        {
+          "name": "RELEASEYEAR",
+          "type": "RELEASEYEAR"
+        }]
+    }
+  ]
+}

@@ -19,7 +19,12 @@ if (argument === 'genre') {
 } else if (argument === 'discover') {
     // http://docs.themoviedb.apiary.io/#reference/discover/discovermovie
     theMovieDb.discover.getMovies({
-        'with_genres': '35,28|35|28' // (comedy and action) or comedy or action
+        'page':1,
+        'with_genres': '35,28|35|28', // (comedy and action) or comedy or action
+        'release_date.gte': '2015-01-31',
+        'release_date.lte': '2016-01-31',
+        'sort_by': 'popularity.desc',  // also 'release_date.desc', 'vote_average.desc'
+        'vote_count.gte': 5 //
     }, successCB, errorCB);
 } else if (argument === 'movie') {
     theMovieDb.movies.getById({"id": 293660}, successCB, errorCB);

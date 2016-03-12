@@ -63,6 +63,8 @@ function onSessionStarted(sessionStartedRequest, session) {
 function onLaunch(launchRequest, session, callback) {
     console.log("onLaunch requestId=" + launchRequest.requestId +
         ", sessionId=" + session.sessionId);
+
+    welcome(callback);
 }
 
 /**
@@ -82,9 +84,13 @@ function onIntent(intentRequest, session, callback) {
         recommendMovie(intent, session, callback);
     } else if ("ListGenresIntent" === intentName) {
         listGenres(callback);
-    } else {
-        throw "Invalid intent";
-    }
+    } else if ("LaunchIntent" === intentName){
+        welcome(callback);
+    } else if ("CommandNegativeMovieIntent" === intentName){
+        handleNegativeMovieIntent(intent, session, callback);
+    } else if ("CommandPositiveMovieIntent" === intentName){
+        handlePositiveMovieIntent(intent, session, callback);
+    } 
 }
 
 /**
@@ -98,6 +104,16 @@ function onSessionEnded(sessionEndedRequest, session) {
 }
 
 // --------------- Functions that control the skill's behavior -----------------------
+
+function welcome(callback) {
+
+    //TODO: Query for random current top movie
+    //if user liked last movie, ask them about it
+    speechOutput = "Welcome, the top movie in theatres is now Deadpool";
+    
+    callback({},
+     buildSpeechletResponse("welcome", speechOutput, "", false));
+}
 
 function addReleaseYear(intent, session, callback) {
     var releaseYearSlot = intent.slots.RELEASEYEAR;
@@ -138,6 +154,43 @@ function listGenres(callback) {
     callback(sessionAttributes,
          buildSpeechletResponse("ListGenres", speechOutput, "", false));
 
+}
+
+function handleNegativeMovieIntent(intent, session, callback) {
+    //record movie in user preferences
+    // if new user recommend random movie
+    // else, recommend based on favourites
+
+    var movie = Math.round(Math.random()) ? getRandomGenreMovie() : getRandomYearMovie();
+    var speechOutput = generateRecommendationSpeech(movie);
+    var sessionAttributes = {};
+
+    callback(sessionAttributes,
+         buildSpeechletResponse("CommandNegativeMovieIntent", speechOutput, "", true)); 
+}
+
+function handlePositiveMovieIntent(intent, session, callback) {
+    //record movie in user preferences
+    var movie = "Deadpool";
+    var speechOutput = "Great, you can watch " + movie + " in theatres. Next time, let me know if it’s great.";
+    var sessionAttributes = {};
+
+    callback(sessionAttributes,
+         buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", true));    
+}
+
+function getRandomGenreMovie() {
+    // randomly retrieve top movie amongst a random genre
+    return "Interstellar"
+}
+
+function getRandomYearMovie() {
+    // randomly retrieve top movie amongst a random genre
+    return "Casablanca";
+}
+
+function generateRecommendationSpeech(movie) {
+    return "Would you be interested in watching "+ movie;
 }
 
 //  Helpers for Lookup

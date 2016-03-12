@@ -22,6 +22,12 @@
     },
     {
       "intent": "LaunchIntent"
+    },
+    {
+      "intent": "CommandNegativeMovieIntent"
+    },
+    {
+      "intent": "CommandPositiveMovieIntent"
     }
   ]
 }

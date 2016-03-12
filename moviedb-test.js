@@ -16,7 +16,11 @@ function errorCB(data) {
 if (argument === 'genre') {
     theMovieDb.genres.getList({}, successCB, errorCB);
 } else if (argument === 'discover') {
-    theMovieDb.discover.getMovies({}, successCB, errorCB)
+    // http://docs.themoviedb.apiary.io/#reference/discover/discovermovie
+    theMovieDb.discover.getMovies({
+        'include_adult' : true,
+        'with_genres' : '35,28|35|28' // (comedy and action) or comedy or action
+    }, successCB, errorCB)
 } else {
     console.log("invalid argument: " + argument);
 }

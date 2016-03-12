@@ -21,8 +21,9 @@ if (argument === 'genre') {
     theMovieDb.discover.getMovies({
         'page':1,
         'with_genres': '35,28|35|28', // (comedy and action) or comedy or action
-        'release_date.gte': '2015-01-31',
-        'release_date.lte': '2016-01-31',
+        //'release_date.gte': '2015-01-31',
+        //'release_date.lte': '2016-01-31',
+        'primary_release_year' : '1994',
         'sort_by': 'popularity.desc',  // also 'release_date.desc', 'vote_average.desc'
         'vote_count.gte': 5 //
     }, successCB, errorCB);

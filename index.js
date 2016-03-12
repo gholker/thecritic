@@ -117,8 +117,17 @@ function recommendMovie(intent, session, callback) {
     var speechOutput = "recommendMovie is " + genre
     var sessionAttributes = {};
 
-    callback(sessionAttributes,
-     buildSpeechletResponse("recommendMovie", speechOutput, "", false));
+    var genre_id = getGenreID(genre);
+    if (genre_id > -1) {
+        speechOutput = "The genre id is " + genre_id;
+        callback(sessionAttributes,
+            buildSpeechletResponse("recommendMovie", speechOutput, "", false));
+    }
+    else {
+        speechOutput = "Sorry, I don't know the genre(s) you're interested in";
+        callback(sessionAttributes,
+            buildSpeechletResponse("recommendMovie", speechOutput, "", false));
+    }
 }
 
 function listGenres(callback) {
@@ -130,6 +139,22 @@ function listGenres(callback) {
          buildSpeechletResponse("ListGenres", speechOutput, "", false));
 
 }
+
+//  Helpers for Lookup
+ function getGenreID(genre_name) {
+     var local_genres = require('./genres.json');
+      console.log(local_genres);
+      var genre_id =  -1;
+      for (var i in local_genres.genres) {
+        var genreDictionary =  local_genres.genres[i];
+        if (genreDictionary.name === genre_name) {
+            genre_id = genreDictionary.id;
+            break;
+        }
+      }
+
+      return genre_id;
+ }
 
 
 

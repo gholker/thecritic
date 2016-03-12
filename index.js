@@ -10,7 +10,6 @@
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
 
-var tools = require('./resttest');
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
@@ -64,9 +63,6 @@ function onSessionStarted(sessionStartedRequest, session) {
 function onLaunch(launchRequest, session, callback) {
     console.log("onLaunch requestId=" + launchRequest.requestId +
         ", sessionId=" + session.sessionId);
-
-    // Dispatch to your skill's launch.
-    getWelcomeResponse(callback);
 }
 
 /**
@@ -80,12 +76,12 @@ function onIntent(intentRequest, session, callback) {
         intentName = intentRequest.intent.name;
 
     // Dispatch to your skill's intent handlers
-    if ("MyColorIsIntent" === intentName) {
-        setColorInSession(intent, session, callback);
-    } else if ("WhatsMyColorIntent" === intentName) {
-        getColorFromSession(intent, session, callback);
-    } else if ("AMAZON.HelpIntent" === intentName) {
-        getWelcomeResponse(callback);
+    if ("AddReleaseYearIntent" === intentName) {
+        addReleaseYear(intent, session, callback);
+    } else if ("RecommendMovieIntent" === intentName) {
+        recommendMovie(intent, session, callback);
+    } else if ("ListGenresIntent" === intentName) {
+        listGenres(callback);
     } else {
         throw "Invalid intent";
     }
@@ -103,103 +99,39 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // --------------- Functions that control the skill's behavior -----------------------
 
-function getWelcomeResponse(callback) {
-    // If we wanted to initialize the session to have some attributes we could add those here.
+function addReleaseYear(intent, session, callback) {
+    var releaseYearSlot = intent.slots.RELEASEYEAR;
+    var releaseYear = releaseYearSlot.value.replace(',','');
+
+    var speechOutput = "addReleaseYear is " + releaseYear;
     var sessionAttributes = {};
-    var cardTitle = "Welcome";
-    var speechOutput = "Welcome to the Alexa Skills Kit sample. " +
-        "Please tell me your favorite color by saying, my favorite color is red";
-    // If the user either does not reply to the welcome message or says something that is not
-    // understood, they will be prompted again with this text.
-    var repromptText = "Please tell me your favorite color by saying, " +
-        "my favorite color is red";
-    var shouldEndSession = false;
 
-
-    var options = {
-        host: 'https://baconipsum.com',
-        port: 443,
-        path: '/api/?type=meat-and-filler',
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-
-        tools.foo(options,
-        function(statusCode, result)
-        {
-            // I could work with the result html/json here.  I could also just return it
-            // console.log("onResult: (" + statusCode + ")" + JSON.stringify(result));
-            // res.statusCode = statusCode;
-            // res.send(result);
-
-            repromptText = JSON.stringify(result);
-
-            callback(sessionAttributes,
-                buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
-        });
-
-}
-
-/**
- * Sets the color in the session and prepares the speech to reply to the user.
- */
-function setColorInSession(intent, session, callback) {
-    var cardTitle = intent.name;
-    var favoriteColorSlot = intent.slots.Color;
-    var repromptText = "";
-    var sessionAttributes = {};
-    var shouldEndSession = false;
-    var speechOutput = "";
-
-    if (favoriteColorSlot) {
-        var favoriteColor = favoriteColorSlot.value;
-        sessionAttributes = createFavoriteColorAttributes(favoriteColor);
-        speechOutput = "I now know your favorite color is " + favoriteColor + ". You can ask me " +
-            "your favorite color by saying, what's my favorite color?";
-        repromptText = "You can ask me your favorite color by saying, what's my favorite color?";
-    } else {
-        speechOutput = "I'm not sure what your favorite color is. Please try again";
-        repromptText = "I'm not sure what your favorite color is. You can tell me your " +
-            "favorite color by saying, my favorite color is red";
-    }
 
     callback(sessionAttributes,
-         buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+     buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
 }
 
-function createFavoriteColorAttributes(favoriteColor) {
-    return {
-        favoriteColor: favoriteColor
-    };
-}
-
-function getColorFromSession(intent, session, callback) {
-    var favoriteColor;
-    var repromptText = null;
+function recommendMovie(intent, session, callback) {
+    var genreSlot = intent.slots.GENRE;
+    var genre = genreSlot.value;
+    var speechOutput = "recommendMovie is " + genre
     var sessionAttributes = {};
-    var shouldEndSession = false;
-    var speechOutput = "";
 
-    if (session.attributes) {
-        favoriteColor = session.attributes.favoriteColor;
-    }
-
-    if (favoriteColor) {
-        speechOutput = "Your favorite color is " + favoriteColor + ". Goodbye.";
-        shouldEndSession = true;
-    } else {
-        speechOutput = "I'm not sure what your favorite color is, you can say, my favorite color " +
-            " is red";
-    }
-
-    // Setting repromptText to null signifies that we do not want to reprompt the user.
-    // If the user does not respond or says something that is not understood, the session
-    // will end.
     callback(sessionAttributes,
-         buildSpeechletResponse(intent.name, speechOutput, repromptText, shouldEndSession));
+     buildSpeechletResponse("recommendMovie", speechOutput, "", false));
 }
+
+function listGenres(callback) {
+
+    var speechOutput = "The genres you can ask me about are the following: Action,Adventure,Animation,Comedy,Crime,Documentary,Drama,Family,Fantasy,Foreign,History,Horror,Music,Mystery,Romance,Science Fiction,TV Movie,Thriller,War,Western";
+    var sessionAttributes = {};
+
+    callback(sessionAttributes,
+         buildSpeechletResponse("ListGenres", speechOutput, "", false));
+
+}
+
+
 
 // --------------- Helpers that build all of the responses -----------------------
 

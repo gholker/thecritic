@@ -5,4 +5,12 @@ AddReleaseYearIntent was released in {RELEASEYEAR}
 AddReleaseYearIntent year of release {RELEASEYEAR}
 AddReleaseYearIntent {RELEASEYEAR} release
 AddReleaseYearIntent year {RELEASEYEAR}
+RecommendMovieIntent I would like a movie based on {GENRE}
+RecommendMovieIntent I would like to watch a {GENRE} movie
+RecommendMovieIntent Recommend a movie based on {GENRE}
+RecommendMovieIntent I want to watch a movie based on {GENRE}
+RecommendMovieIntent I want to watch a {GENRE} movie
+RecommendMovieIntent I feel like a {GENRE} movie
+RecommendMovieIntent I feel like {GENRE}
+ListGenresIntent List genres
 

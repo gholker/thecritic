@@ -13,4 +13,13 @@ RecommendMovieIntent I want to watch a {GENRE} movie
 RecommendMovieIntent I feel like a {GENRE} movie
 RecommendMovieIntent I feel like {GENRE}
 ListGenresIntent List genres
-
+ListGenresIntent What genres can I search by
+ListGenresIntent What genres
+ListGenresIntent genres
+ListGenresIntent can i search by a particular genre
+ListGenresIntent can i search by a movie type
+ListGenresIntent search by category
+ListGenresIntent what categories can I search by
+ListGenresIntent i want to watch a particular genre
+ListGenresIntent can I choose a type of movie
+LaunchIntent hi

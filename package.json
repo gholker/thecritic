@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "xhr2": "*"
+    "xhr2": "*",
+    "dynamodb" :"*"
   }
 }

@@ -9,6 +9,8 @@
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
+
+var tools = require('./resttest');
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
@@ -113,8 +115,31 @@ function getWelcomeResponse(callback) {
         "my favorite color is red";
     var shouldEndSession = false;
 
-    callback(sessionAttributes,
-        buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+
+    var options = {
+        host: 'https://baconipsum.com',
+        port: 443,
+        path: '/api/?type=meat-and-filler',
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+        tools.foo(options,
+        function(statusCode, result)
+        {
+            // I could work with the result html/json here.  I could also just return it
+            // console.log("onResult: (" + statusCode + ")" + JSON.stringify(result));
+            // res.statusCode = statusCode;
+            // res.send(result);
+
+            repromptText = JSON.stringify(result);
+
+            callback(sessionAttributes,
+                buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+        });
+
 }
 
 /**

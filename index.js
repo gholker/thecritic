@@ -73,6 +73,9 @@ function onLaunch(launchRequest, session, callback) {
 function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId +
         ", sessionId=" + session.sessionId);
+    if (session.attributes) {
+        console.log("session release year: " + session.attributes.releaseYear);
+    }
 
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
@@ -138,11 +141,10 @@ function addReleaseYear(intent, session, callback) {
     var releaseYear = releaseYearSlot.value.replace(',','');
 
     var speechOutput = "addReleaseYear is " + releaseYear;
-    var sessionAttributes = {};
+    session.attributes.releaseYear = releaseYear;
 
 
-    callback(sessionAttributes,
-     buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
+    callback(session.attributes, buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
 }
 
 function recommendMovie(intent, session, callback) {

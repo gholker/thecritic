@@ -112,12 +112,38 @@ function onSessionEnded(sessionEndedRequest, session) {
 // --------------- Functions that control the skill's behavior -----------------------
 
 function welcome(session, welcome_callback) {
-    async_new_user_flow(session, welcome_callback);
+    if (!session.attributes.lastSuggestedMovieId) {
+            async_new_user_flow(session, welcome_callback);
+    } else {
+        welcome_back_user(session, welcome_callback);
+    }   
+}
+
+function welcome_back_user(session, welcome_callback) {
+    var lastMovieId = session.attributes.lastSuggestedMovieId;
+    var async = require('async');
+    async.waterfall([
+        getMovie,
+        complete
+     ], function(err, result) {
+
+     });
+
+    function getMovie(callback) {
+        var movie = retrieveMovie(lastMovieId,function (movie){
+        callback(null, movie);
+        });
+     }
+
+     function complete(movie, callback) {
+        var parsedMovie = JSON.parse(movie);
+        speechOutput = "It's good to see you again, how was " + JSON.stringify(parsedMovie.title) + " ?";
+        welcome_callback(session.attributes, buildSpeechletResponse("welcome", speechOutput, "", false));
+    }
 }
 
 function async_new_user_flow(session, async_callback) {
-        var async = require('async');
-
+    var async = require('async');
      async.waterfall([
         getMovie,
         complete
@@ -154,7 +180,6 @@ function addReleaseYear(intent, session, callback) {
         speechOutput += ". How about " + JSON.stringify(movie.title) + "?";
         callback(session.attributes, buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
     });
-
 }
 
 function addGenre(intent, session, callback) {
@@ -259,7 +284,7 @@ function handlePositiveMovieIntent(intent, session, callback) {
     var sessionAttributes = {};
 
     callback(sessionAttributes,
-         buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", true));    
+         buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", false));    
 }
 
 function getRandomGenreMovie(callback) {
@@ -329,6 +354,29 @@ function generateRecommendationSpeech(movie) {
     var index = Math.floor(Math.random() * (years.years.length - 1 )) + 0
     var yearDictionary =  years.years[index];
     return yearDictionary.year;
+ }
+
+ function retrieveMovie(movieId, callback) {
+   var theMovieDb = require('./themoviedb').movieDb;
+    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    function successCB(data) {
+        console.log("SUCCESS RETRIEVING MOVIE");
+        var parsed = JSON.parse(data);
+        callback(JSON.stringify(parsed));
+    };
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING MOVIE");
+        console.log("Error callback: " + data);
+        callback("");
+    };
+
+    theMovieDb.movies.getById({
+        'id':movieId
+    }, successCB, errorCB);
  }
 
  //------ movie db requests

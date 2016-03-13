@@ -42,5 +42,28 @@
     return yearDictionary.year;
  }
 
- var id = getRandomYear();
+  function retrieveMovie(movieId, callback) {
+   var theMovieDb = require('./themoviedb').movieDb;
+    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    function successCB(data) {
+        var parsed = JSON.parse(data);
+        return JSON.stringify(parsed);
+        // callback(JSON.stringify(parsed));
+    };
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING MOVIE");
+        console.log("Error callback: " + data);
+        // callback("");
+    };
+
+    theMovieDb.movies.getById({
+        'id':movieId
+    }, successCB, errorCB);
+ }
+
+ var id = retrieveMovie(256835, null);
  console.log(id);

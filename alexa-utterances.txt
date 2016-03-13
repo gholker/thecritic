@@ -5,15 +5,25 @@ AddReleaseYearIntent was released in {RELEASEYEAR}
 AddReleaseYearIntent year of release {RELEASEYEAR}
 AddReleaseYearIntent {RELEASEYEAR} release
 AddReleaseYearIntent year {RELEASEYEAR}
+AddReleaseYearIntent add release year {RELEASEYEAR}
+AddReleaseYearIntent I want to watch something from {RELEASEYEAR}
+AddReleaseYearIntent how about {RELEASEYEAR}
+AddReleaseYearIntent {RELEASEYEAR} please
+AddReleaseYearIntent lets go with {RELEASEYEAR}
+AddReleaseYearIntent let us go with {RELEASEYEAR}
+AddReleaseYearIntent hit me with something from {RELEASEYEAR}
 RecommendMovieIntent I would like a movie based on {GENRE}
 RecommendMovieIntent I would like to watch a {GENRE} movie
 RecommendMovieIntent Recommend a movie based on {GENRE}
+RecommendMovieIntent Please recommend a movie based on {GENRE}
 RecommendMovieIntent I want to watch a movie based on {GENRE}
 RecommendMovieIntent I want to watch a {GENRE} movie
-RecommendMovieIntent i want to watch {GENRE}
+RecommendMovieIntent I want to watch a {GENRE}
+RecommendMovieIntent I want to watch {GENRE}
 RecommendMovieIntent I feel like a {GENRE} movie
 RecommendMovieIntent I feel like {GENRE}
-RecommendMovieIntent how about {GENRE} movies
+RecommendMovieIntent How about {GENRE}
+RecommendMovieIntent How about {GENRE} movies
 ListGenresIntent List genres
 ListGenresIntent What genres can I search by
 ListGenresIntent What genres
@@ -25,10 +35,39 @@ ListGenresIntent what categories can I search by
 ListGenresIntent i want to watch a particular genre
 ListGenresIntent can I choose a type of movie
 LaunchIntent hi
-CommandNegativeMovieIntent No I dont watch to watch that
+LaunchIntent hello
+LaunchIntent sup
+LaunchIntent yo
+LaunchIntent hey hey hey
+LaunchIntent movie now
+CommandPositiveMovieIntent oh yea
+CommandNegativeMovieIntent Nope I dont watch to watch that
 CommandNegativeMovieIntent No thanks
 CommandNegativeMovieIntent No
 CommandNegativeMovieIntent Seen it
-CommandPositiveMovieIntent Sure I will watch that
+CommandNegativeMovieIntent Definitely not
+CommandNegativeMovieIntent Not interested
+CommandNegativeMovieIntent No thank you
+CommandNegativeMovieIntent Ill pass
+CommandNegativeMovieIntent Lets try something else
+CommandNegativeMovieIntent Let us try something else
+CommandNegativeMovieIntent Try again
+CommandNegativeMovieIntent Next
+CommandNegativeMovieIntent Nope
+CommandNegativeMovieIntent Never
+CommandNegativeMovieIntent Its terrible
+CommandNegativeMovieIntent That sucks
+CommandNegativeMovieIntent are you crazy
+CommandNegativeMovieIntent who programmed you
+CommandNegativeMovieIntent my toaster can think of something better
+CommandPositiveMovieIntent Sure Ill watch that
 CommandPositiveMovieIntent That sounds good
 CommandPositiveMovieIntent Great choice
+CommandPositiveMovieIntent Good one
+CommandPositiveMovieIntent Im interested
+CommandPositiveMovieIntent Great recommendation
+CommandPositiveMovieIntent Good choice
+CommandPositiveMovieIntent Amazing
+CommandPositiveMovieIntent Awesome
+CommandPositiveMovieIntent oh yea
+CommandPositiveMovieIntent lets do it

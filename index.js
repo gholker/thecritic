@@ -107,9 +107,6 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 function welcome(welcome_callback) {
 
-    //TODO: Query for random current top movie
-    //if user liked last movie, ask them about it
-
     var async = require('async');
 
      async.waterfall([
@@ -124,9 +121,8 @@ function welcome(welcome_callback) {
         callback(null,getRandomGenreID());
      }
 
-     function getMovie(movieId, callback) {
-        console.log("genre id is "+ movieId);
-        var movie = getTopRatedMovie(movieId, function (movie){
+     function getMovie(genreId, callback) {
+        var movie = getTopRatedMovie(genreId, function (movie){
         callback(null, movie);
         });
      }

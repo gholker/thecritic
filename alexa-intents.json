@@ -28,6 +28,10 @@
     },
     {
       "intent": "CommandPositiveMovieIntent"
+    },
+        {
+      "intent": "CommandUserReturnIntent"
     }
+
   ]
 }

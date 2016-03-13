@@ -18,12 +18,9 @@ RecommendMovieIntent Recommend a movie based on {GENRE}
 RecommendMovieIntent Please recommend a movie based on {GENRE}
 RecommendMovieIntent I want to watch a movie based on {GENRE}
 RecommendMovieIntent I want to watch a {GENRE} movie
-RecommendMovieIntent I want to watch a {GENRE}
-RecommendMovieIntent I want to watch {GENRE}
 RecommendMovieIntent I feel like a {GENRE} movie
 RecommendMovieIntent I feel like {GENRE}
 RecommendMovieIntent How about {GENRE}
-RecommendMovieIntent How about {GENRE} movies
 ListGenresIntent List genres
 ListGenresIntent What genres can I search by
 ListGenresIntent What genres
@@ -44,7 +41,6 @@ CommandPositiveMovieIntent oh yea
 CommandNegativeMovieIntent Nope I dont watch to watch that
 CommandNegativeMovieIntent No thanks
 CommandNegativeMovieIntent No
-CommandNegativeMovieIntent Seen it
 CommandNegativeMovieIntent Definitely not
 CommandNegativeMovieIntent Not interested
 CommandNegativeMovieIntent No thank you
@@ -71,3 +67,8 @@ CommandPositiveMovieIntent Amazing
 CommandPositiveMovieIntent Awesome
 CommandPositiveMovieIntent oh yea
 CommandPositiveMovieIntent lets do it
+CommandUserReturnIntent Ill be back
+CommandUserReturnIntent Im back
+CommandUserReturnIntent I am back
+CommandUserReturnIntent I have returned
+CommandUserReturnIntent The great one has returned

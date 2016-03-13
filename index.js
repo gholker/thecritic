@@ -9,7 +9,7 @@
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
-
+var welcome_back_flow = false;
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
@@ -67,7 +67,8 @@ function onLaunch(launchRequest, session, callback) {
     console.log("onLaunch requestId=" + launchRequest.requestId +
         ", sessionId=" + session.sessionId);
 
-    welcome(callback);
+            // welcome(session, callback);
+
 }
 
 /**
@@ -76,6 +77,7 @@ function onLaunch(launchRequest, session, callback) {
 function onIntent(intentRequest, session, callback) {
     console.log("onIntent requestId=" + intentRequest.requestId +
         ", sessionId=" + session.sessionId);
+
     if (session.attributes) {
         console.log("session release year: " + session.attributes.releaseYear);
     }
@@ -83,7 +85,6 @@ function onIntent(intentRequest, session, callback) {
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
 
-    // Dispatch to your skill's intent handlers
     if ("AddReleaseYearIntent" === intentName) {
         addReleaseYear(intent, session, callback);
     } else if ("RecommendMovieIntent" === intentName) {
@@ -96,7 +97,9 @@ function onIntent(intentRequest, session, callback) {
         handleNegativeMovieIntent(intent, session, callback);
     } else if ("CommandPositiveMovieIntent" === intentName){
         handlePositiveMovieIntent(intent, session, callback);
-    } 
+    } else if ("CommandUserReturnIntent" === intentName) {
+        handleBeingBack(intent, session, callback);
+    }
 }
 
 /**
@@ -107,14 +110,18 @@ function onSessionEnded(sessionEndedRequest, session) {
     console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId +
         ", sessionId=" + session.sessionId);
     // Add cleanup logic here
+    session.attributes = {};
 }
 
 // --------------- Functions that control the skill's behavior -----------------------
 
 function welcome(session, welcome_callback) {
-    if (!session.attributes.lastSuggestedMovieId) {
-            async_new_user_flow(session, welcome_callback);
+
+    //!session.attributes.lastSuggestedMovieId
+    if (true) {
+        async_new_user_flow(session, welcome_callback);
     } else {
+        welcome_back_flow = true;
         welcome_back_user(session, welcome_callback);
     }   
 }
@@ -159,7 +166,11 @@ function async_new_user_flow(session, async_callback) {
 
     function complete(movie, callback) {
         var parsedMovie = JSON.parse(movie);
+            if(!session.attributes) {
+                session.attributes = {};
+            }
         session.attributes.lastSuggestedMovieId = parsedMovie.id;
+        session.attributes.lastSuggestedMovieTitle = JSON.stringify(parsedMovie.title);
         speechOutput = "Welcome to the critic! A top rated movie you can now watch is " + JSON.stringify(parsedMovie.title);
         async_callback(session.attributes, buildSpeechletResponse("welcome", speechOutput, "", false));
     }
@@ -177,6 +188,8 @@ function addReleaseYear(intent, session, callback) {
 
     getNextMovieSuggestion(session, function(movie){
         session.attributes.lastSuggestedMovieId = movie.id;
+        session.attributes.lastSuggestedMovieTitle = JSON.stringify(movie.title);
+
         speechOutput += ". How about " + JSON.stringify(movie.title) + "?";
         callback(session.attributes, buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
     });
@@ -197,6 +210,8 @@ function addGenre(intent, session, callback) {
         session.attributes.genres.push(genre_id);
         getNextMovieSuggestion(session, function(movie){
             session.attributes.lastSuggestedMovieId = movie.id;
+            session.attributes.lastSuggestedMovieTitle = JSON.stringify(movie.title);
+
             var speechOutput = "Ok. How about " + JSON.stringify(movie.title) + "?";
             callback(session.attributes, buildSpeechletResponse("recommendMovie", speechOutput, "", false));
         });
@@ -224,11 +239,13 @@ function handleNegativeMovieIntent(intent, session, callback) {
     // else, recommend based on favourites
     addLastMovieToNegated(session);
 
-    if (false) {
+    if (welcome_back_flow) {
         async_random_movie_flow(session, callback);
     } else {
         getNextMovieSuggestion(session, function(movie){
             session.attributes.lastSuggestedMovieId = movie.id;
+            session.attributes.lastSuggestedMovieTitle = JSON.stringify(movie.title);
+
             var speechOutput = "Ok. How about " + JSON.stringify(movie.title) + "?";
             callback(session.attributes, buildSpeechletResponse("negativeResponse", speechOutput, "", false));
         });
@@ -242,6 +259,7 @@ function addLastMovieToNegated(session) {
         }
         session.attributes.negatedMovies.push(session.attributes.lastSuggestedMovieId);
         session.attributes.lastSuggestedMovieId = null;
+        session.attributes.lastSuggestedMovieTitle = null;
     }
 }
 
@@ -273,18 +291,36 @@ function async_random_movie_flow(session, async_callback) {
     function complete(movie, callback) {
         speechOutput = generateRecommendationSpeech(movie);
         session.attributes.lastSuggestedMovieId = JSON.parse(movie).id;
+        session.attributes.lastSuggestedMovieTitle = JSON.stringify(movie.title);
+
         async_callback(session.attributes, buildSpeechletResponse("async_random_movie_flow", speechOutput, "", false));
     }
 }
 
 function handlePositiveMovieIntent(intent, session, callback) {
-    //record movie in user preferences
-    var movie = "Deadpool";
-    var speechOutput = "Great, you can watch " + movie + " in theatres. Next time, let me know if it’s great.";
-    var sessionAttributes = {};
+    if (welcome_back_flow)
+    {
+        var speechOutput = "Great to hear that, what would you like me to recommend today ?";
 
-    callback(sessionAttributes,
-         buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", false));    
+        callback(session.attributes,
+         buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", false )); 
+    }
+    else {
+        var speechOutput = generateExcellentSeech(session.attributes.lastSuggestedMovieTitle);
+        
+        callback(session.attributes,
+         buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", false)); 
+    }  
+}
+
+function handleBeingBack(intent, session, callback) {
+
+    if (session.attributes.lastSuggestedMovieTitle) {
+        welcome_back_flow = true;    
+        welcome_back_user(session, callback);
+    } else {
+        async_new_user_flow(session, callback);
+    }
 }
 
 function getRandomGenreMovie(callback) {
@@ -297,6 +333,32 @@ function getRandomYearMovie(callback) {
     // randomly retrieve top movie amongst a random genre
     var randomYear = getRandomYear();
     getTopRatedMovieForYear(randomYear, callback);
+}
+
+function generateExcellentSeech(movie) {
+    var randomResponse = randomNumber(5,1);
+    var response;
+    switch(randomResponse)  {
+        case 1:
+            response  = "Great, you can watch " + movie + " now. Next time, let me know if it is great.";
+            break;
+        case 2:
+            response  = "Let me know if you liked " + movie + " next time.";
+            break;
+        case 3:
+            response  = "Well, I hope you tell me how " + movie + " was";
+            break;
+        case 4:
+            response  = "Don't forget the popcorn! Enjoy " + movie;
+            break;
+        case 5:
+            response  = movie + " is a great choice.";
+            break;
+        default:
+            response  = "Great, you can watch " + movie + " now. Next time, let me know if it is great.";
+    }
+
+    return response;
 }
 
 function generateRecommendationSpeech(movie) {

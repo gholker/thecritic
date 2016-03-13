@@ -86,14 +86,19 @@ function onIntent(intentRequest, session, callback) {
         intentName = intentRequest.intent.name;
 
     if ("AddReleaseYearIntent" === intentName) {
+        welcome_back_flow = false;
         addReleaseYear(intent, session, callback);
     } else if ("RecommendMovieIntent" === intentName) {
+        welcome_back_flow = false;
         addGenre(intent, session, callback);
     } else if ("ListGenresIntent" === intentName) {
+        welcome_back_flow = false;
         listGenres(callback);
     } else if ("LaunchIntent" === intentName){
+        welcome_back_flow = false;
         welcome(session, callback);
     } else if ("CommandNegativeMovieIntent" === intentName){
+        welcome_back_flow = false;
         handleNegativeMovieIntent(intent, session, callback);
     } else if ("CommandPositiveMovieIntent" === intentName){
         handlePositiveMovieIntent(intent, session, callback);
@@ -300,6 +305,7 @@ function async_random_movie_flow(session, async_callback) {
 function handlePositiveMovieIntent(intent, session, callback) {
     if (welcome_back_flow)
     {
+        welcome_back_flow = false;
         var speechOutput = "Great to hear that, what would you like me to recommend today ?";
 
         callback(session.attributes,

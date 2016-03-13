@@ -55,6 +55,9 @@ exports.handler = function (event, context) {
 function onSessionStarted(sessionStartedRequest, session) {
     console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId +
         ", sessionId=" + session.sessionId);
+    if(!session.attributes) {
+        session.attributes = {};
+    }
 }
 
 /**
@@ -84,7 +87,7 @@ function onIntent(intentRequest, session, callback) {
     if ("AddReleaseYearIntent" === intentName) {
         addReleaseYear(intent, session, callback);
     } else if ("RecommendMovieIntent" === intentName) {
-        recommendMovie(intent, session, callback);
+        addGenre(intent, session, callback);
     } else if ("ListGenresIntent" === intentName) {
         listGenres(callback);
     } else if ("LaunchIntent" === intentName){
@@ -147,21 +150,23 @@ function addReleaseYear(intent, session, callback) {
     callback(session.attributes, buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
 }
 
-function recommendMovie(intent, session, callback) {
+function addGenre(intent, session, callback) {
     var genreSlot = intent.slots.GENRE;
     var genre = genreSlot.value;
     var speechOutput = "recommendMovie is " + genre
-    var sessionAttributes = {};
 
     var genre_id = getGenreID(genre);
     if (genre_id > -1) {
-        speechOutput = "The genre id is " + genre_id;
-        callback(sessionAttributes,
-            buildSpeechletResponse("recommendMovie", speechOutput, "", false));
+        speechOutput = "OK";
+        if (!session.attributes.genres) {
+            session.attributes.genres = [];
+        }
+        session.attributes.genres.push(genre_id);
+        callback(session.attributes, buildSpeechletResponse("recommendMovie", speechOutput, "", false));
     }
     else {
-        speechOutput = "Sorry, I don't know the genre(s) you're interested in";
-        callback(sessionAttributes,
+        speechOutput = "Sorry, I didn't catch that";
+        callback(session.attributes,
             buildSpeechletResponse("recommendMovie", speechOutput, "", false));
     }
 }

@@ -149,8 +149,12 @@ function addReleaseYear(intent, session, callback) {
     var speechOutput = "ok " + releaseYear;
     session.attributes.releaseYear = releaseYear;
 
+    getNextMovieSuggestion(session, function(movie){
+        session.attributes.lastSuggestedMovieId = movie.id;
+        speechOutput += ". How about " + JSON.stringify(movie.title) + "?";
+        callback(session.attributes, buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
+    });
 
-    callback(session.attributes, buildSpeechletResponse("addReleaseYear", speechOutput, "", false));
 }
 
 function addGenre(intent, session, callback) {
@@ -159,16 +163,18 @@ function addGenre(intent, session, callback) {
 
     var genreSlot = intent.slots.GENRE;
     var genre = genreSlot.value;
-    var speechOutput = "recommendMovie is " + genre
 
     var genre_id = getGenreID(genre);
     if (genre_id > -1) {
-        speechOutput = "OK";
         if (!session.attributes.genres) {
             session.attributes.genres = [];
         }
         session.attributes.genres.push(genre_id);
-        callback(session.attributes, buildSpeechletResponse("recommendMovie", speechOutput, "", false));
+        getNextMovieSuggestion(session, function(movie){
+            session.attributes.lastSuggestedMovieId = movie.id;
+            var speechOutput = "Ok. How about " + JSON.stringify(movie.title) + "?";
+            callback(session.attributes, buildSpeechletResponse("recommendMovie", speechOutput, "", false));
+        });
     }
     else {
         speechOutput = "Sorry, I didn't catch that";
@@ -193,8 +199,14 @@ function handleNegativeMovieIntent(intent, session, callback) {
     // else, recommend based on favourites
     addLastMovieToNegated(session);
 
-    if (true) {
+    if (false) {
         async_random_movie_flow(session, callback);
+    } else {
+        getNextMovieSuggestion(session, function(movie){
+            session.attributes.lastSuggestedMovieId = movie.id;
+            var speechOutput = "Ok. How about " + JSON.stringify(movie.title) + "?";
+            callback(session.attributes, buildSpeechletResponse("negativeResponse", speechOutput, "", false));
+        });
     }
 }
 
@@ -372,6 +384,83 @@ function generateRecommendationSpeech(movie) {
         'sort_by': 'popularity.desc',
         'vote_count.gte': 5 //
     }, successCB, errorCB);
+}
+
+function getNextMovieSuggestion(session, callback) {
+    var theMovieDb = require('./themoviedb').movieDb;
+    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    function successCB(data) {
+
+        var parsed = JSON.parse(data);
+        var negatedMovies = session.attributes.negatedMovies;
+        if (negatedMovies && negatedMovies.length > 0) {
+            console.log("checking if movie is negated");
+            for (var i in parsed.results) {
+                //var result = JSON.stringify(parsed.results[i]);
+                var result = parsed.results[i];
+                console.log(result);
+
+                var isNegated = false;
+                for (var j in negatedMovies) {
+                    var id = negatedMovies[j];
+                    if (result.id === id) {
+                        console.log("found movie was negated: " + id);
+                        isNegated = true;
+                        break;
+                    }
+                }
+
+                if (!isNegated) {
+                    console.log("found movie that has not been negated");
+                    callback(result);
+                    break;
+                }
+            }
+        } else {
+            console.log("return result disregard negated movies");
+            console.log(parsed.results[0]);
+            callback(parsed.results[0]);
+        }
+
+    }
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING TOP RATED MOVIE FOR YEAR");
+        console.log("Error callback: " + data);
+        callback("");
+    }
+
+    var query = {
+        'page':1,
+        'sort_by': 'popularity.desc',
+        'vote_count.gte': 5 //
+    };
+    if (session.attributes.releaseYear) {
+        query['primary_release_year'] = session.attributes.releaseYear;
+    } else {
+        // default to within the last year
+        var date = new Date();
+        date.setFullYear(date.getFullYear() - 1);
+        var month = (date.getMonth() + 1);
+        var day = date.getDate();
+        var dateformat = date.getFullYear() + '-' + (month > 9 ? month : "0" + month) + '-' + (day > 9 ? day : "0" + day);
+        console.log("query with date: " + dateformat);
+        query['release_date.gte'] = dateformat;
+    }
+    if (session.attributes.genres && session.attributes.genres.length > 0) {
+        var s = "";
+        for (var i in session.attributes.genres) {
+            if (s.length > 0) {
+                s += "|";
+            }
+            s += session.attributes.genres[i];
+        }
+        query['with_genres'] = s;
+    }
+    theMovieDb.discover.getMovies(query, successCB, errorCB);
 }
 
 function randomNumber(max, min) {

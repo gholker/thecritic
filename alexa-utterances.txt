@@ -28,6 +28,7 @@ LaunchIntent hi
 CommandNegativeMovieIntent No I dont watch to watch that
 CommandNegativeMovieIntent No thanks
 CommandNegativeMovieIntent No
+CommandNegativeMovieIntent Seen it
 CommandPositiveMovieIntent Sure I will watch that
 CommandPositiveMovieIntent That sounds good
 CommandPositiveMovieIntent Great choice

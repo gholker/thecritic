@@ -448,7 +448,7 @@ function generateRecommendationSpeech(movie) {
 function generateByeSpeech() {
     var randomResponse = randomNumber(5,1);
     var response;
-    switch(4)  {
+    switch(randomResponse)  {
         case 1:
             response  = "Bye and don't forget, the first american film to show a toilet flushing on screen was Psycho";
             break;

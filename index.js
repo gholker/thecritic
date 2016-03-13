@@ -179,12 +179,41 @@ function handleNegativeMovieIntent(intent, session, callback) {
     // if new user recommend random movie
     // else, recommend based on favourites
 
-    var movie = Math.round(Math.random()) ? getRandomGenreMovie() : getRandomYearMovie();
-    var speechOutput = generateRecommendationSpeech(movie);
-    var sessionAttributes = {};
+    if (true) {
+        async_random_movie_flow(callback);
+    }
+}
 
-    callback(sessionAttributes,
-         buildSpeechletResponse("CommandNegativeMovieIntent", speechOutput, "", true)); 
+function async_random_movie_flow(async_callback) {
+        var async = require('async');
+
+     async.waterfall([
+        getMovie,
+        complete
+     ], function(err, result) {
+
+     });
+
+     function getMovie(callback) {
+        var res = Math.random() * (1);
+        if (res) {
+            console.log("random genre");
+            var movie = getRandomGenreMovie(function (movie){
+                callback(null, movie);
+            });
+        } else {
+            console.log("random year");
+            var movie = getRandomYearMovie(function (movie){
+                callback(null, movie);
+            });
+        }
+     }
+
+     function complete(movie, callback) {
+         speechOutput = generateRecommendationSpeech(movie);
+        async_callback({},
+         buildSpeechletResponse("async_random_movie_flow", speechOutput, "", false));     
+    }
 }
 
 function handlePositiveMovieIntent(intent, session, callback) {
@@ -210,7 +239,30 @@ function getRandomYearMovie(callback) {
 }
 
 function generateRecommendationSpeech(movie) {
-    return "Would you be interested in watching "+ movie;
+    var parsedMovie = JSON.parse(movie);
+    var randomResponse = randomNumber(5,1);
+    var response;
+    switch(randomResponse)  {
+        case 1:
+            response  = "Would you be interested in watching "+ JSON.stringify(parsedMovie.title) + " instead?";
+            break;
+        case 2:
+            response  = "What about "+ JSON.stringify(parsedMovie.title) + " ?";
+            break;
+        case 3:
+            response  = "You might enjoy "+ JSON.stringify(parsedMovie.title) + " ?";
+            break;
+        case 4:
+            response  = "I think you might like "+ JSON.stringify(parsedMovie.title);
+            break;
+        case 5:
+            response  = "I think "+ JSON.stringify(parsedMovie.title) + " might peak your interest";
+            break;
+        default:
+            response  = "Would you be interested in watching "+ JSON.stringify(parsedMovie.title) + " instead?";
+    }
+
+    return response;
 }
 
 //  Helpers for Lookup
@@ -296,6 +348,10 @@ function generateRecommendationSpeech(movie) {
         'sort_by': 'popularity.desc',
         'vote_count.gte': 5 //
     }, successCB, errorCB);
+}
+
+function randomNumber(max, min) {
+    return Math.floor(Math.random() * (max - min )) + min;
 }
 
 // --------------- Helpers that build all of the responses -----------------------

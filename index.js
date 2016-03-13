@@ -111,9 +111,11 @@ function onIntent(intentRequest, session, callback) {
     } else if ("CommandUserReturnIntent" === intentName) {
         similar_rec_flow  = false;
         handleBeingBack(intent, session, callback);
-    } else if ("CommandUserSimilarIntent") {
+    } else if ("CommandUserSimilarIntent" === intentName) {
         similar_rec_flow  = false;
         recommendSimilar(intent, session, callback);
+    } else if ("CommandUserLeave" === intentName) {
+        handleLeave(intent, session, callback);
     }
 }
 
@@ -442,6 +444,38 @@ function generateRecommendationSpeech(movie) {
 
     return response;
 }
+
+function generateByeSpeech() {
+    var randomResponse = randomNumber(5,1);
+    var response;
+    switch(4)  {
+        case 1:
+            response  = "Bye and don't forget, the first american film to show a toilet flushing on screen was Psycho";
+            break;
+        case 2:
+            response  = "Don't forget, Sean Connery wore a wig in every single one of his Bond performances.";
+            break;
+        case 3:
+            response  = "I'll miss you, did u also know Arnold Schwarzenegger was paid approximately $21,429 for every one of the 700 words he said in, Terminator 2: Judgement Day.";
+            break;
+        case 4:
+            response  = "Come back soon for new recommendations...Oh my, Samuel L. Jackson used the word mother-fucker to overcome his stammer/stutter.";
+            break;
+        case 5:
+            response  = "Wow, Fox passed on The Watchmen because they thought the script was “one of the most unintelligible pieces of shit they had read in years.";
+            break;
+        default:
+            response  = "See you at the movies!";
+    }
+
+    return response;
+}
+
+function handleLeave(intent, session, callback) {
+    var speechOutput = generateByeSpeech();
+    callback(session.attributes, buildSpeechletResponse("leave", speechOutput, "", true));
+}
+
 
 //  Helpers for Lookup
  function getGenreID(genre_name) {

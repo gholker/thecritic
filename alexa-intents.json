@@ -31,7 +31,12 @@
     },
         {
       "intent": "CommandUserReturnIntent"
+    },
+  {
+      "intent": "CommandUserSimilarIntent"
+    },
+    {
+      "intent": "CommandUserLeave"
     }
-
   ]
 }

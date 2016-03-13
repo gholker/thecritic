@@ -72,3 +72,8 @@ CommandUserReturnIntent Im back
 CommandUserReturnIntent I am back
 CommandUserReturnIntent I have returned
 CommandUserReturnIntent The great one has returned
+CommandUserSimilarIntent Find me something similar
+CommandUserSimilarIntent similar
+CommandUserSimilarIntent maybe
+CommandUserLeave end transmission
+CommandUserLeave the end

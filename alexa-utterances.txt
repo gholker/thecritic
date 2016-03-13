@@ -12,6 +12,7 @@ AddReleaseYearIntent {RELEASEYEAR} please
 AddReleaseYearIntent lets go with {RELEASEYEAR}
 AddReleaseYearIntent let us go with {RELEASEYEAR}
 AddReleaseYearIntent hit me with something from {RELEASEYEAR}
+AddReleaseYearIntent {RELEASEYEAR} was a good year
 RecommendMovieIntent I would like a movie based on {GENRE}
 RecommendMovieIntent I would like to watch a {GENRE} movie
 RecommendMovieIntent Recommend a movie based on {GENRE}
@@ -21,6 +22,8 @@ RecommendMovieIntent I want to watch a {GENRE} movie
 RecommendMovieIntent I feel like a {GENRE} movie
 RecommendMovieIntent I feel like {GENRE}
 RecommendMovieIntent How about {GENRE}
+RecommendMovieIntent {GENRE}
+RecommendMovieIntent What about {GENRE}
 ListGenresIntent List genres
 ListGenresIntent What genres can I search by
 ListGenresIntent What genres
@@ -31,12 +34,6 @@ ListGenresIntent search by category
 ListGenresIntent what categories can I search by
 ListGenresIntent i want to watch a particular genre
 ListGenresIntent can I choose a type of movie
-LaunchIntent hi
-LaunchIntent hello
-LaunchIntent sup
-LaunchIntent yo
-LaunchIntent hey hey hey
-LaunchIntent movie now
 CommandPositiveMovieIntent oh yea
 CommandNegativeMovieIntent Nope I dont watch to watch that
 CommandNegativeMovieIntent No thanks
@@ -65,6 +62,9 @@ CommandPositiveMovieIntent Great recommendation
 CommandPositiveMovieIntent Good choice
 CommandPositiveMovieIntent Amazing
 CommandPositiveMovieIntent Awesome
+CommandPositiveMovieIntent Definitely
+CommandPositiveMovieIntent Yes
+CommandPositiveMovieIntent Lets go with that
 CommandPositiveMovieIntent oh yea
 CommandPositiveMovieIntent lets do it
 CommandUserReturnIntent Ill be back

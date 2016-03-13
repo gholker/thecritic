@@ -65,5 +65,32 @@
     }, successCB, errorCB);
  }
 
- var id = retrieveMovie(256835, null);
+ function getSimilarMovies(movieId) {
+              var theMovieDb = require('./themoviedb').movieDb;
+
+        theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+        theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    function successCB(data) {
+        var parsed = JSON.parse(data);
+        // callback(parsed.results);
+        console.log(parsed.results[0]);
+        return parsed.results[0];
+        // callback(JSON.stringify(parsed));
+    };
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING MOVIE");
+        console.log("Error callback: " + data);
+        // callback("");
+    };
+
+    theMovieDb.movies.getSimilarMovies({
+        'id':movieId,
+        'page': 1
+    }, successCB, errorCB);
+ }
+
+ var id = getSimilarMovies(256835);
  console.log(id);

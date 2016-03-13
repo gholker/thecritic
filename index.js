@@ -10,6 +10,7 @@
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
 var welcome_back_flow = false;
+var similar_rec_flow = false;
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
@@ -87,23 +88,32 @@ function onIntent(intentRequest, session, callback) {
 
     if ("AddReleaseYearIntent" === intentName) {
         welcome_back_flow = false;
+        similar_rec_flow  = false;
         addReleaseYear(intent, session, callback);
     } else if ("RecommendMovieIntent" === intentName) {
         welcome_back_flow = false;
+        similar_rec_flow  = false;
         addGenre(intent, session, callback);
     } else if ("ListGenresIntent" === intentName) {
         welcome_back_flow = false;
+        similar_rec_flow  = false;
         listGenres(callback);
     } else if ("LaunchIntent" === intentName){
         welcome_back_flow = false;
+        similar_rec_flow  = false;
         welcome(session, callback);
     } else if ("CommandNegativeMovieIntent" === intentName){
         welcome_back_flow = false;
+        similar_rec_flow  = false;
         handleNegativeMovieIntent(intent, session, callback);
     } else if ("CommandPositiveMovieIntent" === intentName){
         handlePositiveMovieIntent(intent, session, callback);
     } else if ("CommandUserReturnIntent" === intentName) {
+        similar_rec_flow  = false;
         handleBeingBack(intent, session, callback);
+    } else if ("CommandUserSimilarIntent") {
+        similar_rec_flow  = false;
+        recommendSimilar(intent, session, callback);
     }
 }
 
@@ -306,10 +316,15 @@ function handlePositiveMovieIntent(intent, session, callback) {
     if (welcome_back_flow)
     {
         welcome_back_flow = false;
-        var speechOutput = "Great to hear that, what would you like me to recommend today ?";
+        similar_rec_flow = true;
+        var speechOutput = "Great to hear that, what would you like me to recommend today ? Something similar to your last movie?";
 
         callback(session.attributes,
          buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", false )); 
+    }
+    else if (similar_rec_flow) {
+        similar_rec_flow  = false;
+        recommendSimilar(intent, session, callback);
     }
     else {
         var speechOutput = generateExcellentSeech(session.attributes.lastSuggestedMovieTitle);
@@ -317,6 +332,40 @@ function handlePositiveMovieIntent(intent, session, callback) {
         callback(session.attributes,
          buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", false)); 
     }  
+}
+
+function recommendSimilar(intent, session, rcallback) {
+    if (! session.attributes.lastSuggestedMovieId) {
+        var speechOutput = "Similar to what?"
+        rcallback(session.attributes, buildSpeechletResponse("recommend_callback", speechOutput, "", false));
+        return;
+    }
+
+     var lastMovieId = session.attributes.lastSuggestedMovieId;
+    var async = require('async');
+    async.waterfall([
+        getMovie,
+        complete
+     ], function(err, result) {
+
+     });
+
+    function getMovie(callback) {
+        var movies = getSimilarMovies(lastMovieId,function (movies){
+        callback(null, movies);
+        });
+     }
+
+     function complete(movies, callback) {
+        var parsedMovies = JSON.parse(movies);
+        var index = Math.floor(Math.random() * (parsedMovies.length - 1 )) + 0
+        var parsedMovie = parsedMovies[index];
+        session.attributes.lastSuggestedMovieId = parsedMovie.id;
+        session.attributes.lastSuggestedMovieTitle = JSON.stringify(parsedMovie.title);
+
+        var speechOutput = "Tell me, what do you think of " + JSON.stringify(parsedMovie.title) + " ?";
+        rcallback(session.attributes, buildSpeechletResponse("recommend_callback", speechOutput, "", false));
+    }
 }
 
 function handleBeingBack(intent, session, callback) {
@@ -578,6 +627,30 @@ function getNextMovieSuggestion(session, callback) {
     }
     theMovieDb.discover.getMovies(query, successCB, errorCB);
 }
+
+function getSimilarMovies(movieId, callback) {
+      var theMovieDb = require('./themoviedb').movieDb;
+        theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+        theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    function successCB(data) {
+        console.log("SUCCESS" + data);
+        var parsed = JSON.parse(data);
+        callback(JSON.stringify(parsed.results));
+    };
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING MOVIE");
+        console.log("Error callback: " + data);
+        // callback("");
+    };
+
+    theMovieDb.movies.getSimilarMovies({
+        'id':movieId,
+        'page': 1
+    }, successCB, errorCB);
+ }
 
 function randomNumber(max, min) {
     return Math.floor(Math.random() * (max - min )) + min;

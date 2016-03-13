@@ -106,32 +106,31 @@ function onSessionEnded(sessionEndedRequest, session) {
 // --------------- Functions that control the skill's behavior -----------------------
 
 function welcome(welcome_callback) {
+    async_new_user_flow(welcome_callback);
+}
 
-    var async = require('async');
+function async_new_user_flow(async_callback) {
+        var async = require('async');
 
      async.waterfall([
-        randomIdFunc,
         getMovie,
         complete
      ], function(err, result) {
 
      });
 
-     function randomIdFunc(callback) {
-        callback(null,getRandomGenreID());
-     }
-
-     function getMovie(genreId, callback) {
-        var movie = getTopRatedMovie(genreId, function (movie){
+     function getMovie(callback) {
+        var movie = getRandomGenreMovie(function (movie){
         callback(null, movie);
         });
      }
 
      function complete(movie, callback) {
         var parsedMovie = JSON.parse(movie);
-         speechOutput = "Welcome, the top movie in theatres is now " + JSON.stringify(parsedMovie.title);
- welcome_callback({},
-         buildSpeechletResponse("welcome", speechOutput, "", false));     }
+         speechOutput = "Welcome to the critic! A top rated movie you can now watch is " + JSON.stringify(parsedMovie.title);
+        async_callback({},
+         buildSpeechletResponse("welcome", speechOutput, "", false));     
+    }
 }
 
 function addReleaseYear(intent, session, callback) {
@@ -198,14 +197,16 @@ function handlePositiveMovieIntent(intent, session, callback) {
          buildSpeechletResponse("CommandPositiveMovieIntent", speechOutput, "", true));    
 }
 
-function getRandomGenreMovie() {
+function getRandomGenreMovie(callback) {
     // randomly retrieve top movie amongst a random genre
-    return "Interstellar"
+    var randomGenreID = getRandomGenreID();
+    getTopRatedMovie(randomGenreID, callback);
 }
 
-function getRandomYearMovie() {
+function getRandomYearMovie(callback) {
     // randomly retrieve top movie amongst a random genre
-    return "Casablanca";
+    var randomYear = getRandomYear();
+    getTopRatedMovieForYear(randomYear, callback);
 }
 
 function generateRecommendationSpeech(movie) {
@@ -234,12 +235,20 @@ function generateRecommendationSpeech(movie) {
     return genreDictionary.id;
  }
 
+ function getRandomYear() {
+    var years = require('./years.json');
+    var year_id =  -1;
+    var index = Math.floor(Math.random() * (years.years.length - 1 )) + 0
+    var yearDictionary =  years.years[index];
+    return yearDictionary.year;
+ }
+
+ //------ movie db requests
+
   function getTopRatedMovie(genre_id, callback) {
     var theMovieDb = require('./themoviedb').movieDb;
     theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
     theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
-
-    console.log("the genreid is " + genre_id);
 
     function successCB(data) {
         console.log("SUCCESS RETRIEVING TOP RATED MOVIE");
@@ -258,6 +267,32 @@ function generateRecommendationSpeech(movie) {
         'page':1,
         'with_genres': genre_id,
         'release_date.gte': '2015-01-31',
+        'sort_by': 'popularity.desc',
+        'vote_count.gte': 5 //
+    }, successCB, errorCB);
+}
+
+  function getTopRatedMovieForYear(year, callback) {
+    var theMovieDb = require('./themoviedb').movieDb;
+    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    function successCB(data) {
+        console.log("SUCCESS RETRIEVING TOP RATED MOVIE FOR YEAR");
+        var parsed = JSON.parse(data);
+        callback(JSON.stringify(parsed.results[0]));
+    };
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING TOP RATED MOVIE FOR YEAR");
+        console.log("Error callback: " + data);
+        callback("");
+    };
+
+    theMovieDb.discover.getMovies({
+        'page':1,
+        'primary_release_year' : year,
         'sort_by': 'popularity.desc',
         'vote_count.gte': 5 //
     }, successCB, errorCB);

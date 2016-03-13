@@ -23,9 +23,9 @@ ListGenresIntent what categories can I search by
 ListGenresIntent i want to watch a particular genre
 ListGenresIntent can I choose a type of movie
 LaunchIntent hi
-CommandNegativeMovieIntent No, I don’t watch to watch that
+CommandNegativeMovieIntent No I dont watch to watch that
 CommandNegativeMovieIntent No thanks
 CommandNegativeMovieIntent No
-CommandPositiveMovieIntent Sure, I’ll watch that
+CommandPositiveMovieIntent Sure I will watch that
 CommandPositiveMovieIntent That sounds good
 CommandPositiveMovieIntent Great choice

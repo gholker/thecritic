@@ -140,6 +140,9 @@ function async_new_user_flow(session, async_callback) {
 }
 
 function addReleaseYear(intent, session, callback) {
+    // if the add release year then presumably they didn't like the last movie suggestion
+    addLastMovieToNegated(session);
+
     var releaseYearSlot = intent.slots.RELEASEYEAR;
     var releaseYear = releaseYearSlot.value.replace(',','');
 
@@ -151,6 +154,9 @@ function addReleaseYear(intent, session, callback) {
 }
 
 function addGenre(intent, session, callback) {
+    // if the add genre then presumably they didn't like the last movie suggestion
+    addLastMovieToNegated(session);
+
     var genreSlot = intent.slots.GENRE;
     var genre = genreSlot.value;
     var speechOutput = "recommendMovie is " + genre
@@ -185,9 +191,20 @@ function handleNegativeMovieIntent(intent, session, callback) {
     //record movie in user preferences
     // if new user recommend random movie
     // else, recommend based on favourites
+    addLastMovieToNegated(session);
 
     if (true) {
         async_random_movie_flow(session, callback);
+    }
+}
+
+function addLastMovieToNegated(session) {
+    if (session.attributes.lastSuggestedMovieId) {
+        if (!session.attributes.negatedMovies) {
+            session.attributes.negatedMovies = [];
+        }
+        session.attributes.negatedMovies.push(session.attributes.lastSuggestedMovieId);
+        session.attributes.lastSuggestedMovieId = null;
     }
 }
 

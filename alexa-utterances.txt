@@ -13,6 +13,7 @@ RecommendMovieIntent I want to watch a {GENRE} movie
 RecommendMovieIntent i want to watch {GENRE}
 RecommendMovieIntent I feel like a {GENRE} movie
 RecommendMovieIntent I feel like {GENRE}
+RecommendMovieIntent how about {GENRE} movies
 ListGenresIntent List genres
 ListGenresIntent What genres can I search by
 ListGenresIntent What genres

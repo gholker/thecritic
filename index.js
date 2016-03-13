@@ -91,7 +91,7 @@ function onIntent(intentRequest, session, callback) {
     } else if ("ListGenresIntent" === intentName) {
         listGenres(callback);
     } else if ("LaunchIntent" === intentName){
-        welcome(callback);
+        welcome(session, callback);
     } else if ("CommandNegativeMovieIntent" === intentName){
         handleNegativeMovieIntent(intent, session, callback);
     } else if ("CommandPositiveMovieIntent" === intentName){
@@ -111,11 +111,11 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // --------------- Functions that control the skill's behavior -----------------------
 
-function welcome(welcome_callback) {
-    async_new_user_flow(welcome_callback);
+function welcome(session, welcome_callback) {
+    async_new_user_flow(session, welcome_callback);
 }
 
-function async_new_user_flow(async_callback) {
+function async_new_user_flow(session, async_callback) {
         var async = require('async');
 
      async.waterfall([
@@ -131,11 +131,11 @@ function async_new_user_flow(async_callback) {
         });
      }
 
-     function complete(movie, callback) {
+    function complete(movie, callback) {
         var parsedMovie = JSON.parse(movie);
-         speechOutput = "Welcome to the critic! A top rated movie you can now watch is " + JSON.stringify(parsedMovie.title);
-        async_callback({},
-         buildSpeechletResponse("welcome", speechOutput, "", false));     
+        session.attributes.lastSuggestedMovieId = parsedMovie.id;
+        speechOutput = "Welcome to the critic! A top rated movie you can now watch is " + JSON.stringify(parsedMovie.title);
+        async_callback(session.attributes, buildSpeechletResponse("welcome", speechOutput, "", false));
     }
 }
 
@@ -143,7 +143,7 @@ function addReleaseYear(intent, session, callback) {
     var releaseYearSlot = intent.slots.RELEASEYEAR;
     var releaseYear = releaseYearSlot.value.replace(',','');
 
-    var speechOutput = "addReleaseYear is " + releaseYear;
+    var speechOutput = "ok " + releaseYear;
     session.attributes.releaseYear = releaseYear;
 
 
@@ -187,11 +187,11 @@ function handleNegativeMovieIntent(intent, session, callback) {
     // else, recommend based on favourites
 
     if (true) {
-        async_random_movie_flow(callback);
+        async_random_movie_flow(session, callback);
     }
 }
 
-function async_random_movie_flow(async_callback) {
+function async_random_movie_flow(session, async_callback) {
         var async = require('async');
 
      async.waterfall([
@@ -216,10 +216,10 @@ function async_random_movie_flow(async_callback) {
         }
      }
 
-     function complete(movie, callback) {
-         speechOutput = generateRecommendationSpeech(movie);
-        async_callback({},
-         buildSpeechletResponse("async_random_movie_flow", speechOutput, "", false));     
+    function complete(movie, callback) {
+        speechOutput = generateRecommendationSpeech(movie);
+        session.attributes.lastSuggestedMovieId = JSON.parse(movie).id;
+        async_callback(session.attributes, buildSpeechletResponse("async_random_movie_flow", speechOutput, "", false));
     }
 }
 

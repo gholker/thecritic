@@ -105,14 +105,37 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // --------------- Functions that control the skill's behavior -----------------------
 
-function welcome(callback) {
+function welcome(welcome_callback) {
 
     //TODO: Query for random current top movie
     //if user liked last movie, ask them about it
-    speechOutput = "Welcome, the top movie in theatres is now Deadpool";
-    
-    callback({},
-     buildSpeechletResponse("welcome", speechOutput, "", false));
+
+    var async = require('async');
+
+     async.waterfall([
+        randomIdFunc,
+        getMovie,
+        complete
+     ], function(err, result) {
+
+     });
+
+     function randomIdFunc(callback) {
+        callback(null,getRandomGenreID());
+     }
+
+     function getMovie(movieId, callback) {
+        console.log("genre id is "+ movieId);
+        var movie = getTopRatedMovie(movieId, function (movie){
+        callback(null, movie);
+        });
+     }
+
+     function complete(movie, callback) {
+        var parsedMovie = JSON.parse(movie);
+         speechOutput = "Welcome, the top movie in theatres is now " + JSON.stringify(parsedMovie.title);
+ welcome_callback({},
+         buildSpeechletResponse("welcome", speechOutput, "", false));     }
 }
 
 function addReleaseYear(intent, session, callback) {
@@ -196,7 +219,6 @@ function generateRecommendationSpeech(movie) {
 //  Helpers for Lookup
  function getGenreID(genre_name) {
      var local_genres = require('./genres.json');
-      console.log(local_genres);
       var genre_id =  -1;
       for (var i in local_genres.genres) {
         var genreDictionary =  local_genres.genres[i];
@@ -205,11 +227,45 @@ function generateRecommendationSpeech(movie) {
             break;
         }
       }
-
       return genre_id;
  }
 
+ function getRandomGenreID() {
+    var local_genres = require('./genres.json');
+    var genre_id =  -1;
+    var index = Math.floor(Math.random() * (local_genres.genres.length - 1 )) + 0
+    var genreDictionary =  local_genres.genres[index];
+    return genreDictionary.id;
+ }
 
+  function getTopRatedMovie(genre_id, callback) {
+    var theMovieDb = require('./themoviedb').movieDb;
+    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
+
+    console.log("the genreid is " + genre_id);
+
+    function successCB(data) {
+        console.log("SUCCESS RETRIEVING TOP RATED MOVIE");
+        var parsed = JSON.parse(data);
+        callback(JSON.stringify(parsed.results[0]));
+    };
+
+
+    function errorCB(data) {
+        console.log("ERROR RETRIEVING TOP RATED MOVIE");
+        console.log("Error callback: " + data);
+        callback("");
+    };
+
+    theMovieDb.discover.getMovies({
+        'page':1,
+        'with_genres': genre_id,
+        'release_date.gte': '2015-01-31',
+        'sort_by': 'popularity.desc',
+        'vote_count.gte': 5 //
+    }, successCB, errorCB);
+}
 
 // --------------- Helpers that build all of the responses -----------------------
 

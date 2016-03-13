@@ -67,9 +67,10 @@ function onSessionStarted(sessionStartedRequest, session) {
 function onLaunch(launchRequest, session, callback) {
     console.log("onLaunch requestId=" + launchRequest.requestId +
         ", sessionId=" + session.sessionId);
+        // var speechOutput = "I am the critic, I generally think every movie out there stinks but that's my opinion. What are you interested in watching today?";
+        // callback(session.attributes, buildSpeechletResponse("welcome", speechOutput, "", false));
 
-            // welcome(session, callback);
-
+        welcome(session, callback);
 }
 
 /**

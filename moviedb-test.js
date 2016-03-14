@@ -1,6 +1,6 @@
 var theMovieDb = require('./themoviedb').movieDb;
 
-theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+theMovieDb.common.api_key = "";
 theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
 
 var argument = process.argv[2];

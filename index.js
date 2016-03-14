@@ -510,7 +510,7 @@ function handleLeave(intent, session, callback) {
 
  function retrieveMovie(movieId, callback) {
    var theMovieDb = require('./themoviedb').movieDb;
-    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.api_key = "";
     theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
 
     function successCB(data) {
@@ -535,7 +535,7 @@ function handleLeave(intent, session, callback) {
 
   function getTopRatedMovie(genre_id, callback) {
     var theMovieDb = require('./themoviedb').movieDb;
-    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.api_key = "";
     theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
 
     function successCB(data) {
@@ -562,7 +562,7 @@ function handleLeave(intent, session, callback) {
 
   function getTopRatedMovieForYear(year, callback) {
     var theMovieDb = require('./themoviedb').movieDb;
-    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.api_key = "";
     theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
 
     function successCB(data) {
@@ -588,7 +588,7 @@ function handleLeave(intent, session, callback) {
 
 function getNextMovieSuggestion(session, callback) {
     var theMovieDb = require('./themoviedb').movieDb;
-    theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+    theMovieDb.common.api_key = "";
     theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
 
     function successCB(data) {
@@ -665,7 +665,7 @@ function getNextMovieSuggestion(session, callback) {
 
 function getSimilarMovies(movieId, callback) {
       var theMovieDb = require('./themoviedb').movieDb;
-        theMovieDb.common.api_key = "701f754249ddd9a80e38f464539ffe05";
+        theMovieDb.common.api_key = "";
         theMovieDb.common.base_uri = "https://api.themoviedb.org/3/";
 
     function successCB(data) {
